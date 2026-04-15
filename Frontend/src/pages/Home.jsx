@@ -1,24 +1,71 @@
-import React, { useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { AddTask } from '../components/AddTask'
 import { TaskManagerContext } from '../context/TaskManagerContext'
+import axios from "axios";
 
 export const Home = () => {
-    const { setAddTaskPanel } = useContext(TaskManagerContext);
-  return (
-    <div className='h-screen px-4 py-3 relative'>
-        <div className='flex justify-between items-center '>
-            <h1 className='text-2xl text-[#43754C] font-semibold'>Task Manager</h1>
-           <p onClick={() => setAddTaskPanel(true)} className='px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold'>Add Task</p>
-            
-        </div>
-        <div>
-            <div>
-                <p>Title</p>
-                <p>Description</p>
-            </div>
-        </div>
+    const { setAddTaskPanel,tasks, setTasks } = useContext(TaskManagerContext);
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-        <AddTask/>
-    </div>
+    const fetchTasks = async () => {
+        try {
+            const response = await axios.get(`${backendURL}/api/getTasks`)
+            if(response.data.success){
+                setTasks(response.data.data);
+            } else{
+                console.log(response.data.message)
+            }
+        } catch (error) {
+            console.log(error.response?.data?.message || error.message)
+        }
+    }
+
+    useEffect(() => {
+        fetchTasks();
+    },[])
+
+    const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+  return (
+    <div className="h-screen px-4 py-3 flex flex-col">
+
+  {/* ✅ Header (fixed, no scroll) */}
+  <div className="flex justify-between items-center mb-5">
+    <h1 className="text-2xl text-[#43754C] font-bold">
+      Task Manager
+    </h1>
+    <p
+      onClick={() => setAddTaskPanel(true)}
+      className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold"
+    >
+      Add Task
+    </p>
+  </div>
+
+  {/* ✅ Scroll only here */}
+  <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
+    {tasks.length > 0 ? (
+      tasks.map((item, index) => (
+        <div
+          key={index}
+          className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-2"
+        >
+          <p className="text-lg truncate">
+            {capitalizeFirstLetter(item.title)}
+          </p>
+          <p className="text-sm truncate">
+            {capitalizeFirstLetter(item.description)}
+          </p>
+        </div>
+      ))
+    ) : (
+      <p>Tasks not added yet.</p>
+    )}
+  </div>
+
+  <AddTask />
+</div>
   )
 }

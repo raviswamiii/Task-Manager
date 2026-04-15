@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export const AddTask = () => {
-  const { addTaskPanel, setAddTaskPanel } = useContext(TaskManagerContext);
+  const { addTaskPanel, setAddTaskPanel, setTasks } = useContext(TaskManagerContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addTaskError, setAddTaskError] = useState("");
@@ -18,13 +18,14 @@ export const AddTask = () => {
     setAddTaskError("");
 
     try {
-      const response = await axios.post(`${backendURL}/api/tasks`, {
+      const response = await axios.post(`${backendURL}/api/createTask`, {
         title,
         description,
       });
 
       if (response.data.success) {
-        setAddTaskPanel(false)
+        setTasks((prev) => [response.data.data, ...prev]);
+        setAddTaskPanel(false);
         setTitle("");
         setDescription("");
       } else {
@@ -52,7 +53,7 @@ export const AddTask = () => {
         <input
           className="w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
           type="text"
-          placeholder="Title"
+          placeholder="Title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -60,7 +61,7 @@ export const AddTask = () => {
         <input
           className="w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
           type="text"
-          placeholder="Description"
+          placeholder="Description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

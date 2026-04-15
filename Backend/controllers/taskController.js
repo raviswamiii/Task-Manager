@@ -22,3 +22,14 @@ export const createTask = async (req, res) => {
         return res.status(500).json({success: false, message: "Error in creating task"})
     }
 }
+
+export const getTasks = async (req, res) => {
+    try {
+        const tasks = await taskModel.find().sort({createdAt: -1});
+
+        return res.status(200).json({success: true, message: "Tasks fetched successfully.", data: tasks})
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({success: false, message: "Error while fetching tasks."})
+    }
+}
