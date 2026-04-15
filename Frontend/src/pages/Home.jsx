@@ -3,10 +3,16 @@ import { AddTask } from "../components/AddTask";
 import { TaskManagerContext } from "../context/TaskManagerContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { MdDeleteSweep } from "react-icons/md";
+import {toast} from "react-toastify";
 
 export const Home = () => {
-  const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter } =
-    useContext(TaskManagerContext);
+  const {
+    setAddTaskPanel,
+    tasks,
+    setTasks,
+    capitalizeFirstLetter,
+  } = useContext(TaskManagerContext);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const fetchTasks = async () => {
@@ -14,6 +20,22 @@ export const Home = () => {
       const response = await axios.get(`${backendURL}/api/getTasks`);
       if (response.data.success) {
         setTasks(response.data.data);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${backendURL}/api/deleteTask/${id}`,
+      );
+      if (response.data.success) {
+        toast.success("Task deleted successfully");
+        setTasks((prev) => prev.filter((task) => task._id !== id));
       } else {
         console.log(response.data.message);
       }
@@ -41,19 +63,25 @@ export const Home = () => {
       {/* ✅ Scroll only here */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
         {tasks.length > 0 ? (
-          tasks.map((item, index) => (
-            <Link
-              to={`/task/${item._id}`}
-              key={index}
-              className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-2"
+          tasks.map((item) => (
+            <div
+              key={item._id}
+              className="bg-[#8ABC94] flex items-center justify-between gap-2 text-white font-semibold rounded-2xl px-4 py-2"
             >
-              <p className="text-lg truncate">
-                {capitalizeFirstLetter(item.title)}
-              </p>
-              <p className="text-sm truncate">
-                {capitalizeFirstLetter(item.description)}
-              </p>
-            </Link>
+              <Link className="w-full" to={`/task/${item._id}`}>
+                <p className="text-lg truncate max-w-[60vw]">
+                  {capitalizeFirstLetter(item.title)}
+                </p>
+                <p className="text-sm truncate max-w-[50vw] text-gray-100">
+                  {capitalizeFirstLetter(item.description)}
+                </p>
+              </Link>
+
+              <MdDeleteSweep
+                onClick={() => handleDeleteTask(item._id)}
+                className="text-3xl cursor-pointer"
+              />
+            </div>
           ))
         ) : (
           <p className="text-center text-gray-400">Tasks not added yet.</p>
