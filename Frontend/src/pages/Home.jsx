@@ -4,16 +4,15 @@ import { TaskManagerContext } from "../context/TaskManagerContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { MdDeleteSweep } from "react-icons/md";
-import {toast} from "react-toastify";
+import { GrEmptyCircle } from "react-icons/gr";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { toast } from "react-toastify";
 
 export const Home = () => {
-  const {
-    setAddTaskPanel,
-    tasks,
-    setTasks,
-    capitalizeFirstLetter,
-  } = useContext(TaskManagerContext);
+  const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter } =
+    useContext(TaskManagerContext);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -30,9 +29,7 @@ export const Home = () => {
 
   const handleDeleteTask = async (id) => {
     try {
-      const response = await axios.delete(
-        `${backendURL}/api/deleteTask/${id}`,
-      );
+      const response = await axios.delete(`${backendURL}/api/deleteTask/${id}`);
       if (response.data.success) {
         toast.success("Task deleted successfully");
         setTasks((prev) => prev.filter((task) => task._id !== id));
@@ -41,6 +38,22 @@ export const Home = () => {
       }
     } catch (error) {
       console.log(error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleToggleTask = async (id) => {
+    try {
+      const response = await axios.patch(`${backendURL}/api/toggleTask/${id}`);
+
+      if (response.data.success) {
+        const updatedTask = response.data.data;
+
+        setTasks((prev) =>
+          prev.map((task) => (task._id === id ? updatedTask : task)),
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -60,26 +73,38 @@ export const Home = () => {
         </p>
       </div>
 
-      {/* ✅ Scroll only here */}
+      {/* ✅ Scroll */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
         {tasks.length > 0 ? (
           tasks.map((item) => (
             <div
               key={item._id}
-              className="bg-[#8ABC94] flex items-center justify-between gap-2 text-white font-semibold rounded-2xl px-4 py-2"
+              className="bg-[#8ABC94] flex items-center justify-between gap-3 text-white font-semibold rounded-2xl px-4 py-2"
             >
+              {item.isCompleted ? (
+                <IoMdCheckmarkCircleOutline
+                  onClick={() => handleToggleTask(item._id)}
+                  className="text-3xl cursor-pointer"
+                />
+              ) : (
+                <GrEmptyCircle
+                  onClick={() => handleToggleTask(item._id)}
+                  className="text-3xl cursor-pointer"
+                />
+              )}
+
               <Link className="w-full" to={`/task/${item._id}`}>
                 <p className="text-lg truncate max-w-[60vw]">
                   {capitalizeFirstLetter(item.title)}
                 </p>
-                <p className="text-sm truncate max-w-[50vw] text-gray-100">
+                <p className="text-sm truncate max-w-[60vw] text-gray-100">
                   {capitalizeFirstLetter(item.description)}
                 </p>
               </Link>
 
               <MdDeleteSweep
                 onClick={() => handleDeleteTask(item._id)}
-                className="text-3xl cursor-pointer"
+                className="text-4xl cursor-pointer"
               />
             </div>
           ))

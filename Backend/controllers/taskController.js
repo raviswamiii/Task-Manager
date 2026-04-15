@@ -89,3 +89,31 @@ export const updateTask = async (req, res) => {
       .json({ success: false, message: "Error while updating task." });
   }
 };
+
+export const toggleTask = async (req, res) => {
+  try {
+    const task = await taskModel.findById(req.params.taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    task.isCompleted = !task.isCompleted;
+
+    await task.save();
+
+    res.status(200).json({
+      success: true,
+      data: task,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Error toggling task",
+    });
+  }
+};
