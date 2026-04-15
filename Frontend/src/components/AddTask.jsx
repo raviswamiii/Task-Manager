@@ -9,6 +9,7 @@ export const AddTask = () => {
     useContext(TaskManagerContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [addTaskError, setAddTaskError] = useState("");
   const [addTaskLoader, setAddTaskLoader] = useState(false);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -23,6 +24,7 @@ export const AddTask = () => {
       const response = await axios.post(`${backendURL}/api/createTask`, {
         title: title,
         description: description,
+        dueDate: dueDate,
       });
 
       if (response.data.success) {
@@ -45,14 +47,14 @@ export const AddTask = () => {
 
   return (
     <div
-      className={`flex flex-col justify-center gap-4 items-center fixed top-0 right-0 h-screen w-full z-20 bg-white transform transition-transform duration-300 ease-in-out ${addTaskPanel ? "translate-x-0" : "translate-x-full"}`}
+      className={`flex flex-col justify-center items-center fixed top-0 right-0 h-screen w-full z-20 bg-white transform transition-transform duration-300 ease-in-out ${addTaskPanel ? "translate-x-0" : "translate-x-full"}`}
     >
       <IoReturnUpBack
         onClick={() => setAddTaskPanel(false)}
         className="text-3xl text-[#43754C] absolute top-2 left-4"
       />
 
-      <h1 className="text-[#8ABC94] font-bold text-xl">ADD NEW TASK</h1>
+      <h1 className="text-[#8ABC94] font-bold text-xl mb-4">ADD NEW TASK</h1>
 
       <form
         onSubmit={handleSubmit}
@@ -66,12 +68,19 @@ export const AddTask = () => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <input
-          className="w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
+        <textarea
+          className="h-[15vh] w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
           type="text"
           placeholder="Description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <input
+          type="date"
+          className="w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
         />
 
         <button
@@ -95,7 +104,7 @@ export const AddTask = () => {
       </form>
 
       {addTaskError && (
-        <p className="text-red-400 text-center text-sm px-2 rounded-md">
+        <p className="text-red-400 text-center text-sm px-2 rounded-md mt-1">
           {addTaskError}
         </p>
       )}

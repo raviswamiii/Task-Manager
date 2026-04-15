@@ -2,9 +2,9 @@ import taskModel from "../models/taskModel.js";
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, dueDate } = req.body;
 
-    if (!title || !description) {
+    if (!title || !description || !dueDate) {
       return res.status(400).json({
         success: false,
         message: "All details are required",
@@ -14,6 +14,7 @@ export const createTask = async (req, res) => {
     const task = await taskModel.create({
       title,
       description,
+      dueDate
     });
 
     return res.status(201).json({

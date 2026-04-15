@@ -60,9 +60,12 @@ export const Task = () => {
         />
       </div>
 
-      <p className="bg-[#8ABC94] text-white rounded-2xl px-4 py-3 max-w-full wrap-break-word leading-relaxed shadow-md">
-        {capitalizeFirstLetter(newTask.description)}
-      </p>
+      <div className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-3 max-w-full wrap-break-word leading-relaxed shadow-md">
+        <p>{capitalizeFirstLetter(newTask.description)}</p>
+        <p className="text-sm text-gray-200 mt-1">
+          Due Date: {new Date(newTask.dueDate).toLocaleDateString()}
+        </p>
+      </div>
       <EditTask />
     </div>
   );

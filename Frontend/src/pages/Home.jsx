@@ -12,7 +12,6 @@ export const Home = () => {
   const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter } =
     useContext(TaskManagerContext);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -76,38 +75,58 @@ export const Home = () => {
       {/* ✅ Scroll */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
         {tasks.length > 0 ? (
-          tasks.map((item) => (
-            <div
-              key={item._id}
-              className="bg-[#8ABC94] flex items-center justify-between gap-3 text-white font-semibold rounded-2xl px-4 py-2"
-            >
-              {item.isCompleted ? (
-                <IoMdCheckmarkCircleOutline
-                  onClick={() => handleToggleTask(item._id)}
-                  className="text-3xl cursor-pointer"
-                />
-              ) : (
-                <GrEmptyCircle
-                  onClick={() => handleToggleTask(item._id)}
-                  className="text-3xl cursor-pointer"
-                />
-              )}
+          tasks.map((item) => {
+            const now = new Date();
 
-              <Link className="w-full" to={`/task/${item._id}`}>
-                <p className="text-lg truncate max-w-[60vw]">
-                  {capitalizeFirstLetter(item.title)}
-                </p>
-                <p className="text-sm truncate max-w-[60vw] text-gray-100">
-                  {capitalizeFirstLetter(item.description)}
-                </p>
-              </Link>
+            const isOverdue = new Date(item.dueDate) < now && !item.isCompleted;
 
-              <MdDeleteSweep
-                onClick={() => handleDeleteTask(item._id)}
-                className="text-4xl cursor-pointer"
-              />
-            </div>
-          ))
+            const isPending =
+              new Date(item.dueDate) >= now && !item.isCompleted;
+            return (
+              <div
+                key={item._id}
+                className={`flex items-center justify-between gap-3 text-white font-semibold rounded-2xl px-4 py-2 ${
+                  isOverdue ? "bg-red-400" : "bg-[#8ABC94]"
+                }`}
+              >
+                {item.isCompleted ? (
+                  <IoMdCheckmarkCircleOutline
+                    onClick={() => handleToggleTask(item._id)}
+                    className="text-3xl cursor-pointer"
+                  />
+                ) : (
+                  <GrEmptyCircle
+                    onClick={() => handleToggleTask(item._id)}
+                    className="text-3xl cursor-pointer"
+                  />
+                )}
+
+                <Link className="w-full" to={`/task/${item._id}`}>
+                  <p className="text-lg truncate max-w-[60vw]">
+                    {capitalizeFirstLetter(item.title)}
+                  </p>
+                  <p className="text-sm truncate max-w-[60vw] text-gray-100">
+                    {capitalizeFirstLetter(item.description)}
+                  </p>
+                  <p className="text-xs text-gray-200">
+                    Due: {new Date(item.dueDate).toLocaleDateString()}
+                  </p>
+                  <p className="text-xs">
+                    {item.isCompleted
+                      ? "Completed ✅"
+                      : isOverdue
+                        ? "Overdue ❌"
+                        : "Pending ⏳"}
+                  </p>
+                </Link>
+
+                <MdDeleteSweep
+                  onClick={() => handleDeleteTask(item._id)}
+                  className="text-4xl cursor-pointer"
+                />
+              </div>
+            );
+          })
         ) : (
           <p className="text-center text-gray-400">Tasks not added yet.</p>
         )}

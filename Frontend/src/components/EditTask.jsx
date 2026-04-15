@@ -6,6 +6,7 @@ import { IoReturnUpBack } from "react-icons/io5";
 export const EditTask = () => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editDueDate, setEditDueDate] = useState("");
   const [editTaskError, setEditTaskError] = useState("");
   const [editTaskLoader, setEditTaskLoader] = useState(false);
 
@@ -42,6 +43,7 @@ export const EditTask = () => {
 
       if (editTitle.trim()) updatedData.title = editTitle;
       if (editDescription.trim()) updatedData.description = editDescription;
+      if (editDueDate) updatedData.dueDate = editDueDate;
 
       const response = await axios.patch(
         `${backendURL}/api/updateTask/${selectedTask._id}`,
@@ -103,6 +105,13 @@ export const EditTask = () => {
           placeholder="Description..."
           value={editDescription}
           onChange={(e) => setEditDescription(e.target.value)}
+        />
+
+        <input
+          type="date"
+          className="w-full px-2 py-2 border-2 border-[#8ABC94] outline-none rounded-xl"
+          value={editDueDate}
+          onChange={(e) => setEditDueDate(e.target.value)}
         />
 
         <button
