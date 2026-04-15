@@ -4,6 +4,7 @@ export const TaskManagerContext = createContext();
 
 export const TaskManagerProvider = ({ children }) => {
   const [addTaskPanel, setAddTaskPanel] = useState(false);
+  const [editTaskPanel, setEditTaskPanel] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -20,6 +21,8 @@ export const TaskManagerProvider = ({ children }) => {
     selectedTask,
     setSelectedTask,
     capitalizeFirstLetter,
+    editTaskPanel,
+    setEditTaskPanel,
   };
 
   return (

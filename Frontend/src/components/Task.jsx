@@ -3,12 +3,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { TaskManagerContext } from "../context/TaskManagerContext";
 import { IoReturnUpBack } from "react-icons/io5";
+import { TbEdit } from "react-icons/tb";
+import { EditTask } from "./EditTask";
 
 export const Task = () => {
   const { taskId } = useParams();
   const [newTask, setNewTask] = useState(null);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const { capitalizeFirstLetter } = useContext(TaskManagerContext);
+  const {
+    capitalizeFirstLetter,
+    setEditTaskPanel,
+    selectedTask,
+    setSelectedTask,
+  } = useContext(TaskManagerContext);
   const navigate = useNavigate();
 
   const fetchTask = async () => {
@@ -16,11 +23,18 @@ export const Task = () => {
       const response = await axios.get(`${backendURL}/api/getTask/${taskId}`);
       if (response.data.success) {
         setNewTask(response.data.data);
+        setSelectedTask(response.data.data);
       }
     } catch (err) {
       console.log(err.message);
     }
   };
+
+  useEffect(() => {
+    if (selectedTask) {
+      setNewTask(selectedTask);
+    }
+  }, [selectedTask]);
 
   useEffect(() => {
     fetchTask();
@@ -40,14 +54,16 @@ export const Task = () => {
             {capitalizeFirstLetter(newTask.title)}
           </h1>
         </div>
-        <p className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold">
-          Add Task
-        </p>
+        <TbEdit
+          className="text-2xl text-[#43754C] cursor-pointer"
+          onClick={() => setEditTaskPanel(true)}
+        />
       </div>
 
       <p className="bg-[#8ABC94] text-white rounded-2xl px-4 py-3 max-w-full wrap-break-word leading-relaxed shadow-md">
         {capitalizeFirstLetter(newTask.description)}
       </p>
+      <EditTask />
     </div>
   );
 };

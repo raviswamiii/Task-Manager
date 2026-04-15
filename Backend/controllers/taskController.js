@@ -70,3 +70,22 @@ export const deleteTask = async (req, res) => {
       .json({ success: false, message: "Error while deleting task." });
   }
 };
+
+export const updateTask = async (req, res) => {
+  try {
+    const updatedTask = await taskModel.findByIdAndUpdate(
+      req.params.taskId,
+      req.body,
+      {
+        returnDocument: "after",
+      },
+    );
+
+    res.status(200).json({ success: true, data: updatedTask });
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error while updating task." });
+  }
+};
