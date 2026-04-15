@@ -33,3 +33,13 @@ export const getTasks = async (req, res) => {
         return res.status(500).json({success: false, message: "Error while fetching tasks."})
     }
 }
+
+export const getTask = async (req, res) => {
+  try {
+    const task = await taskModel.findById(req.params.taskId);
+
+    res.json({ success: true, data: task });
+  } catch (error) {
+    res.status(500).json({ success: false });
+  }
+};

@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from 'react'
 import { AddTask } from '../components/AddTask'
 import { TaskManagerContext } from '../context/TaskManagerContext'
 import axios from "axios";
-
+import {Link} from "react-router-dom"
 export const Home = () => {
-    const { setAddTaskPanel,tasks, setTasks } = useContext(TaskManagerContext);
+    const { setAddTaskPanel, tasks, setTasks } = useContext(TaskManagerContext);
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
     const fetchTasks = async () => {
@@ -48,7 +48,7 @@ export const Home = () => {
   <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
     {tasks.length > 0 ? (
       tasks.map((item, index) => (
-        <div
+        <Link to={`/task/${item._id}`}
           key={index}
           className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-2"
         >
@@ -58,10 +58,10 @@ export const Home = () => {
           <p className="text-sm truncate">
             {capitalizeFirstLetter(item.description)}
           </p>
-        </div>
+        </Link>
       ))
     ) : (
-      <p>Tasks not added yet.</p>
+      <p className='text-center text-gray-400'>Tasks not added yet.</p>
     )}
   </div>
 

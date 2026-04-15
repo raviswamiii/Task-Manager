@@ -14,40 +14,45 @@ export const AddTask = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setAddTaskLoader(true);
-    setAddTaskError("");
+  e.preventDefault();
+  setAddTaskLoader(true);
+  setAddTaskError("");
 
-    try {
-      const response = await axios.post(`${backendURL}/api/createTask`, {
-        title,
-        description,
-      });
+  try {
+    const response = await axios.post(`${backendURL}/api/createTask`, {
+      title: title,
+      description: description,
+    });
 
-      if (response.data.success) {
-        setTasks((prev) => [response.data.data, ...prev]);
-        setAddTaskPanel(false);
-        setTitle("");
-        setDescription("");
-      } else {
-        setAddTaskError(response.data.message);
-      }
-    } catch (error) {
-      setAddTaskError(
-        error.response?.data?.message ||
-          error.message,
-      );
-    } finally {
-      setAddTaskLoader(false);
+    if (response.data.success) {
+
+      setTasks((prev) => [response.data.data, ...prev]);
+
+
+      setAddTaskPanel(false);
+      setTitle("");
+      setDescription("");
+
+      navigate(`/task/${response.data.data._id}`);
+    } else {
+      setAddTaskError(response.data.message);
     }
-  };
+  } catch (error) {
+    setAddTaskError(
+      error.response?.data?.message || error.message
+    );
+  } finally {
+    setAddTaskLoader(false);
+  }
+};
+
   return (
     <div
-      className={`flex flex-col justify-center gap-2 items-center fixed top-0 right-0 h-screen w-full z-20 bg-white transform transition-transform duration-300 ease-in-out ${addTaskPanel ? "translate-x-0" : "translate-x-full"}`}
+      className={`flex flex-col justify-center gap-4 items-center fixed top-0 right-0 h-screen w-full z-20 bg-white transform transition-transform duration-300 ease-in-out ${addTaskPanel ? "translate-x-0" : "translate-x-full"}`}
     >
       <IoReturnUpBack onClick={() => setAddTaskPanel(false)} className='text-3xl text-[#43754C] absolute top-2 left-4'/>
       
-      <h1 className="text-[#8ABC94] font-bold text-2xl">ADD TASK</h1>
+      <h1 className="text-[#8ABC94] font-bold text-xl">ADD NEW TASK</h1>
 
       <form
         onSubmit={handleSubmit}
