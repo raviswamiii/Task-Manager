@@ -5,7 +5,8 @@ import axios from "axios";
 import { IoReturnUpBack } from "react-icons/io5";
 
 export const AddTask = () => {
-  const { addTaskPanel, setAddTaskPanel, setTasks } = useContext(TaskManagerContext);
+  const { addTaskPanel, setAddTaskPanel, setTasks } =
+    useContext(TaskManagerContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addTaskError, setAddTaskError] = useState("");
@@ -14,44 +15,43 @@ export const AddTask = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setAddTaskLoader(true);
-  setAddTaskError("");
+    e.preventDefault();
+    setAddTaskLoader(true);
+    setAddTaskError("");
 
-  try {
-    const response = await axios.post(`${backendURL}/api/createTask`, {
-      title: title,
-      description: description,
-    });
+    try {
+      const response = await axios.post(`${backendURL}/api/createTask`, {
+        title: title,
+        description: description,
+      });
 
-    if (response.data.success) {
+      if (response.data.success) {
+        setTasks((prev) => [response.data.data, ...prev]);
 
-      setTasks((prev) => [response.data.data, ...prev]);
+        setAddTaskPanel(false);
+        setTitle("");
+        setDescription("");
 
-
-      setAddTaskPanel(false);
-      setTitle("");
-      setDescription("");
-
-      navigate(`/task/${response.data.data._id}`);
-    } else {
-      setAddTaskError(response.data.message);
+        navigate(`/task/${response.data.data._id}`);
+      } else {
+        setAddTaskError(response.data.message);
+      }
+    } catch (error) {
+      setAddTaskError(error.response?.data?.message || error.message);
+    } finally {
+      setAddTaskLoader(false);
     }
-  } catch (error) {
-    setAddTaskError(
-      error.response?.data?.message || error.message
-    );
-  } finally {
-    setAddTaskLoader(false);
-  }
-};
+  };
 
   return (
     <div
       className={`flex flex-col justify-center gap-4 items-center fixed top-0 right-0 h-screen w-full z-20 bg-white transform transition-transform duration-300 ease-in-out ${addTaskPanel ? "translate-x-0" : "translate-x-full"}`}
     >
-      <IoReturnUpBack onClick={() => setAddTaskPanel(false)} className='text-3xl text-[#43754C] absolute top-2 left-4'/>
-      
+      <IoReturnUpBack
+        onClick={() => setAddTaskPanel(false)}
+        className="text-3xl text-[#43754C] absolute top-2 left-4"
+      />
+
       <h1 className="text-[#8ABC94] font-bold text-xl">ADD NEW TASK</h1>
 
       <form
@@ -75,23 +75,23 @@ export const AddTask = () => {
         />
 
         <button
-  type="submit"
-  disabled={addTaskLoader}
-  className={`w-full py-2 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition ${
-    addTaskLoader
-      ? "bg-[#8ABC84] cursor-not-allowed"
-      : "bg-[#8ABC94] hover:bg-[#7bb07e] cursor-pointer"
-  }`}
->
-  {addTaskLoader ? (
-    <>
-      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-      <span>Adding...</span>
-    </>
-  ) : (
-    "Add"
-  )}
-</button>
+          type="submit"
+          disabled={addTaskLoader}
+          className={`w-full py-2 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition ${
+            addTaskLoader
+              ? "bg-[#8ABC84] cursor-not-allowed"
+              : "bg-[#8ABC94] hover:bg-[#7bb07e] cursor-pointer"
+          }`}
+        >
+          {addTaskLoader ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Adding...</span>
+            </>
+          ) : (
+            "Add"
+          )}
+        </button>
       </form>
 
       {addTaskError && (
