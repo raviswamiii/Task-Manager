@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import { TaskManagerContext } from "../context/TaskManagerContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const AddTask = () => {
-  const { addTaskPanel } = useContext(TaskManagerContext);
+  const { addTaskPanel, setAddTaskPanel } = useContext(TaskManagerContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addTaskError, setAddTaskError] = useState("");
@@ -17,20 +18,22 @@ export const AddTask = () => {
     setAddTaskError("");
 
     try {
-      const response = await axios.post(`${backendURL}/tasks`, {
+      const response = await axios.post(`${backendURL}/api/tasks`, {
         title,
         description,
       });
 
       if (response.data.success) {
-        navigate("/");
+        setAddTaskPanel(false)
+        setTitle("");
+        setDescription("");
       } else {
         setAddTaskError(response.data.message);
       }
     } catch (error) {
       setAddTaskError(
         error.response?.data?.message ||
-          "An error occurred while adding the task.",
+          error.message,
       );
     } finally {
       setAddTaskLoader(false);
@@ -63,24 +66,25 @@ export const AddTask = () => {
         />
 
         <button
-          className={`bg-[#8ABC94] w-full py-2 text-white font-semibold rounded-xl ${
-            addTaskLoader
-              ? "bg-[#8ABC84] cursor-not-allowed"
-              : "bg-[#8ABC94] hover:bg-[#7bb07e] cursor-pointer"
-          }`}
-          type="submit"
-          disabled={addTaskLoader}
-        >
-          {addTaskLoader ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Adding...
-            </>
-          ) : (
-            "Add"
-          )}
-        </button>
+  type="submit"
+  disabled={addTaskLoader}
+  className={`w-full py-2 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition ${
+    addTaskLoader
+      ? "bg-[#8ABC84] cursor-not-allowed"
+      : "bg-[#8ABC94] hover:bg-[#7bb07e] cursor-pointer"
+  }`}
+>
+  {addTaskLoader ? (
+    <>
+      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      <span>Adding...</span>
+    </>
+  ) : (
+    "Add"
+  )}
+</button>
       </form>
+
       {addTaskError && (
         <p className="text-red-400 text-center text-sm px-2 rounded-md">
           {addTaskError}

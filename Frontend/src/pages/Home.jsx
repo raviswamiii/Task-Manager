@@ -8,7 +8,8 @@ export const Home = () => {
     <div className='h-screen px-4 py-3 relative'>
         <div className='flex justify-between items-center '>
             <h1 className='text-2xl text-[#43754C] font-semibold'>Task Manager</h1>
-            <p onClick={() => setAddTaskPanel(true)} className='px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold'>Add Task</p>
+           <p onClick={() => setAddTaskPanel(true)} className='px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold'>Add Task</p>
+            
         </div>
         <div>
             <div>
