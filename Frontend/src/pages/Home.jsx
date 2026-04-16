@@ -88,7 +88,7 @@ export const Home = () => {
         <h1 className="text-2xl text-[#43754C] font-bold">Task Manager</h1>
         <p
           onClick={() => setAddTaskPanel(true)}
-          className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold"
+          className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold cursor-pointer"
         >
           Add Task
         </p>

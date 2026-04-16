@@ -27,7 +27,7 @@ export const Task = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (response.data.success) {
         setNewTask(response.data.data);
         setSelectedTask(response.data.data);
@@ -55,7 +55,7 @@ export const Task = () => {
         <div className="flex items-center gap-5">
           <IoReturnUpBack
             onClick={() => navigate(-1)}
-            className="text-3xl text-[#43754C]"
+            className="text-3xl text-[#43754C] cursor-pointer"
           />
           <h1 className="text-2xl text-[#43754C] font-bold truncate max-w-[50vw]">
             {capitalizeFirstLetter(newTask.title)}

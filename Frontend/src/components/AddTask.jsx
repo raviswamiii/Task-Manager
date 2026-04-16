@@ -66,7 +66,7 @@ export const AddTask = () => {
     >
       <IoReturnUpBack
         onClick={() => setAddTaskPanel(false)}
-        className="text-3xl text-[#43754C] absolute top-2 left-4"
+        className="text-3xl text-[#43754C] absolute top-2 left-4 cursor-pointer"
       />
 
       <h1 className="text-[#8ABC94] font-bold text-xl mb-4">ADD NEW TASK</h1>
