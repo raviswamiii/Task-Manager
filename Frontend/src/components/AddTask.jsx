@@ -97,7 +97,7 @@ export const AddTask = () => {
       {/* 📝 Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center gap-4 w-[70vw] rounded-xl"
+        className="flex flex-col items-center gap-4 w-[70vw] md:w-[40vw] rounded-xl"
       >
         {/* Title */}
         <input
