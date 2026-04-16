@@ -7,9 +7,11 @@ import { MdDeleteSweep } from "react-icons/md";
 import { GrEmptyCircle } from "react-icons/gr";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { toast } from "react-toastify";
+import { MdLogout } from "react-icons/md";
+import { Logout } from "../components/Logout";
 
 export const Home = () => {
-  const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter } =
+  const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter, logout, setLogout } =
     useContext(TaskManagerContext);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -86,12 +88,16 @@ export const Home = () => {
       {/* ✅ Header (fixed, no scroll) */}
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-2xl text-[#43754C] font-bold">Task Manager</h1>
-        <p
-          onClick={() => setAddTaskPanel(true)}
-          className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold cursor-pointer"
-        >
-          Add Task
-        </p>
+
+        <div className="flex items-center gap-3">
+          <p
+            onClick={() => setAddTaskPanel(true)}
+            className="px-3 py-1 text-sm bg-[#8ABC94] rounded-md text-white font-semibold cursor-pointer"
+          >
+            Add Task
+          </p>
+          <MdLogout onClick={() => setLogout(true)} className="text-xl text-red-400" />
+        </div>
       </div>
 
       {/* ✅ Scroll */}
@@ -155,6 +161,10 @@ export const Home = () => {
       </div>
 
       <AddTask />
+
+      <div className={`flex justify-center items-center fixed inset-0 z-20 bg-black/30 backdrop-blur-sm ${logout ? "" : "hidden"}`}>
+        <Logout />
+      </div>
     </div>
   );
 };

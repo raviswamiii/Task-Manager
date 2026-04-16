@@ -6,6 +6,7 @@ import databaseConnection from "./config/mongodb.js";
 import taskRouter from "./routes/taskRoutes.js";
 import cors from "cors";
 import userRouter from "./routes/userRoutes.js";
+import cookieParser from "cookie-parser";
 
 databaseConnection();
 
@@ -17,6 +18,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api", taskRouter);
 app.use("/user", userRouter);

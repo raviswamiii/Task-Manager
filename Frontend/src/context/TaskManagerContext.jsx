@@ -7,6 +7,7 @@ export const TaskManagerProvider = ({ children }) => {
   const [editTaskPanel, setEditTaskPanel] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [logout, setLogout] = useState(false);
 
   const capitalizeFirstLetter = (text) => {
     if (!text) return "";
@@ -23,6 +24,8 @@ export const TaskManagerProvider = ({ children }) => {
     capitalizeFirstLetter,
     editTaskPanel,
     setEditTaskPanel,
+    logout,
+    setLogout,
   };
 
   return (

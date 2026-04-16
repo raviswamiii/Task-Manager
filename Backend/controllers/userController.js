@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import blackListTokenModel from "../models/blackListToken.js";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -113,5 +114,25 @@ export const userSignIn = async (req, res) => {
       success: false,
       message: "Error while signing in user",
     });
+  }
+};
+
+export const userLogout = async (req, res) => {
+  try {
+    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+
+    if (!token)
+      return res
+        .status(401)
+        .json({ success: false, message: "Token not found." });
+
+    await blackListTokenModel.create({ token });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Logout successfull." });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ success: false, message: "Log out failed." });
   }
 };
