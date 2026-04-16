@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { Logout } from "../components/Logout";
 
 export const Home = () => {
+  const [loading, setLoading] = useState(false);
   // 📌 Context values
   const {
     setAddTaskPanel,
@@ -28,6 +29,7 @@ export const Home = () => {
   // 🔄 Fetch all tasks
   const fetchTasks = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${backendURL}/api/getTasks`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,6 +43,8 @@ export const Home = () => {
       }
     } catch (error) {
       console.log(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,9 +126,15 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* 📜 Task List (scrollable) */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar border border-[#43754C] rounded-2xl p-4">
-        {tasks.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-300">
+            {/* Spinner */}
+            <div className="w-8 h-8 border-4 border-[#8ABC94] border-t-transparent rounded-full animate-spin"></div>
+
+            <p className="mt-3 text-sm text-gray-400">Loading tasks...</p>
+          </div>
+        ) : tasks.length > 0 ? (
           tasks.map((item) => {
             const now = new Date();
 
@@ -133,7 +143,9 @@ export const Home = () => {
 
             const isPending =
               new Date(item.dueDate) >= now && !item.isCompleted;
-
+            {
+              /* 📜 Task List (scrollable) */
+            }
             return (
               <div
                 key={item._id}
