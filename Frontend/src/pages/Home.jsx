@@ -3,19 +3,29 @@ import { AddTask } from "../components/AddTask";
 import { TaskManagerContext } from "../context/TaskManagerContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { MdDeleteSweep } from "react-icons/md";
+import { MdDeleteSweep, MdLogout } from "react-icons/md";
 import { GrEmptyCircle } from "react-icons/gr";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { toast } from "react-toastify";
-import { MdLogout } from "react-icons/md";
 import { Logout } from "../components/Logout";
 
 export const Home = () => {
-  const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter, logout, setLogout } =
-    useContext(TaskManagerContext);
+  // 📌 Context values
+  const {
+    setAddTaskPanel,
+    tasks,
+    setTasks,
+    capitalizeFirstLetter,
+    logout,
+    setLogout,
+  } = useContext(TaskManagerContext);
+
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+  // 🔐 Get token from localStorage
   const token = localStorage.getItem("token");
 
+  // 🔄 Fetch all tasks
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${backendURL}/api/getTasks`, {
@@ -34,6 +44,7 @@ export const Home = () => {
     }
   };
 
+  // 🗑️ Delete task
   const handleDeleteTask = async (id) => {
     try {
       const response = await axios.delete(
@@ -42,11 +53,13 @@ export const Home = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       if (response.data.success) {
         toast.success("Task deleted successfully");
+
+        // 🔄 Remove deleted task from UI
         setTasks((prev) => prev.filter((task) => task._id !== id));
       } else {
         console.log(response.data.message);
@@ -56,6 +69,7 @@ export const Home = () => {
     }
   };
 
+  // 🔁 Toggle task completion
   const handleToggleTask = async (id) => {
     try {
       const response = await axios.patch(
@@ -65,14 +79,17 @@ export const Home = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       if (response.data.success) {
         const updatedTask = response.data.data;
 
+        // 🔄 Update UI instantly
         setTasks((prev) =>
-          prev.map((task) => (task._id === id ? updatedTask : task)),
+          prev.map((task) =>
+            task._id === id ? updatedTask : task
+          )
         );
       }
     } catch (error) {
@@ -80,15 +97,20 @@ export const Home = () => {
     }
   };
 
+  // 🚀 Fetch tasks on mount
   useEffect(() => {
     if (token) fetchTasks();
   }, [token]);
+
   return (
     <div className="h-screen px-4 py-3 flex flex-col">
-      {/* ✅ Header (fixed, no scroll) */}
+      {/* 🔝 Header */}
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-2xl text-[#43754C] font-bold">Task Manager</h1>
+        <h1 className="text-2xl text-[#43754C] font-bold">
+          Task Manager
+        </h1>
 
+        {/* ➕ Add + 🚪 Logout */}
         <div className="flex items-center gap-3">
           <p
             onClick={() => setAddTaskPanel(true)}
@@ -96,20 +118,27 @@ export const Home = () => {
           >
             Add Task
           </p>
-          <MdLogout onClick={() => setLogout(true)} className="text-xl text-red-400" />
+
+          <MdLogout
+            onClick={() => setLogout(true)}
+            className="text-xl text-red-400 cursor-pointer"
+          />
         </div>
       </div>
 
-      {/* ✅ Scroll */}
+      {/* 📜 Task List (scrollable) */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
         {tasks.length > 0 ? (
           tasks.map((item) => {
             const now = new Date();
 
-            const isOverdue = new Date(item.dueDate) < now && !item.isCompleted;
+            // ⚠️ Status checks
+            const isOverdue =
+              new Date(item.dueDate) < now && !item.isCompleted;
 
             const isPending =
               new Date(item.dueDate) >= now && !item.isCompleted;
+
             return (
               <div
                 key={item._id}
@@ -117,6 +146,7 @@ export const Home = () => {
                   isOverdue ? "bg-red-400" : "bg-[#8ABC94]"
                 }`}
               >
+                {/* ✅ Toggle complete */}
                 {item.isCompleted ? (
                   <IoMdCheckmarkCircleOutline
                     onClick={() => handleToggleTask(item._id)}
@@ -129,25 +159,30 @@ export const Home = () => {
                   />
                 )}
 
+                {/* 🔗 Task link */}
                 <Link className="w-full" to={`/task/${item._id}`}>
                   <p className="text-lg truncate max-w-[60vw]">
                     {capitalizeFirstLetter(item.title)}
                   </p>
+
                   <p className="text-sm truncate max-w-[60vw] text-gray-100">
                     {capitalizeFirstLetter(item.description)}
                   </p>
+
                   <p className="text-xs text-gray-200">
                     Due: {new Date(item.dueDate).toLocaleDateString()}
                   </p>
+
                   <p className="text-xs">
                     {item.isCompleted
                       ? "Completed ✅"
                       : isOverdue
-                        ? "Overdue ❌"
-                        : "Pending ⏳"}
+                      ? "Overdue ❌"
+                      : "Pending ⏳"}
                   </p>
                 </Link>
 
+                {/* 🗑️ Delete */}
                 <MdDeleteSweep
                   onClick={() => handleDeleteTask(item._id)}
                   className="text-4xl cursor-pointer"
@@ -156,13 +191,21 @@ export const Home = () => {
             );
           })
         ) : (
-          <p className="text-center text-gray-400">Tasks not added yet.</p>
+          <p className="text-center text-gray-400">
+            Tasks not added yet.
+          </p>
         )}
       </div>
 
+      {/* ➕ Add Task Panel */}
       <AddTask />
 
-      <div className={`flex justify-center items-center fixed inset-0 z-20 bg-black/30 backdrop-blur-sm ${logout ? "" : "hidden"}`}>
+      {/* 🚪 Logout Popup Overlay */}
+      <div
+        className={`flex justify-center items-center fixed inset-0 z-20 bg-black/30 backdrop-blur-sm ${
+          logout ? "" : "hidden"
+        }`}
+      >
         <Logout />
       </div>
     </div>

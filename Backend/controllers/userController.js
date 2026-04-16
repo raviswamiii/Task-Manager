@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import blackListTokenModel from "../models/blackListToken.js";
 
+// Create JWT token
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
@@ -13,7 +14,7 @@ export const userSignUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validate input
+    // Check required fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -21,6 +22,7 @@ export const userSignUp = async (req, res) => {
       });
     }
 
+    // Validate email format
     if (!validator.isEmail(email)) {
       return res.status(400).json({
         success: false,
@@ -28,6 +30,7 @@ export const userSignUp = async (req, res) => {
       });
     }
 
+    // Validate password length
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
@@ -35,7 +38,7 @@ export const userSignUp = async (req, res) => {
       });
     }
 
-    // Check existing user
+    // Check if user already exists
     const exists = await userModel.findOne({ email });
 
     if (exists) {
@@ -45,15 +48,17 @@ export const userSignUp = async (req, res) => {
       });
     }
 
-    // Hash password
+    // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create new user
     const user = await userModel.create({
       name,
       email,
       password: hashedPassword,
     });
 
+    // Generate token
     const token = createToken(user._id);
 
     return res.status(201).json({
@@ -63,6 +68,7 @@ export const userSignUp = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+
     return res.status(500).json({
       success: false,
       message: "Error while signing up user",
@@ -75,7 +81,7 @@ export const userSignIn = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
+    // Check required fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -83,6 +89,7 @@ export const userSignIn = async (req, res) => {
       });
     }
 
+    // Find user by email
     const user = await userModel.findOne({ email });
 
     if (!user) {
@@ -92,6 +99,7 @@ export const userSignIn = async (req, res) => {
       });
     }
 
+    // Compare password with hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -101,6 +109,7 @@ export const userSignIn = async (req, res) => {
       });
     }
 
+    // Generate token
     const token = createToken(user._id);
 
     return res.status(200).json({
@@ -110,6 +119,7 @@ export const userSignIn = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+
     return res.status(500).json({
       success: false,
       message: "Error while signing in user",
@@ -117,22 +127,33 @@ export const userSignIn = async (req, res) => {
   }
 };
 
+// ================= LOGOUT =================
 export const userLogout = async (req, res) => {
   try {
-    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+    // Get token from cookie or header
+    const token =
+      req.cookies.token || req.headers.authorization.split(" ")[1];
 
-    if (!token)
-      return res
-        .status(401)
-        .json({ success: false, message: "Token not found." });
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Token not found.",
+      });
+    }
 
+    // Add token to blacklist
     await blackListTokenModel.create({ token });
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Logout successfull." });
+    return res.status(200).json({
+      success: true,
+      message: "Logout successfull.",
+    });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ success: false, message: "Log out failed." });
+
+    return res.status(500).json({
+      success: false,
+      message: "Log out failed.",
+    });
   }
 };

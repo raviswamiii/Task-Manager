@@ -7,72 +7,96 @@ import { TbEdit } from "react-icons/tb";
 import { EditTask } from "./EditTask";
 
 export const Task = () => {
+  // 📌 Get taskId from URL params
   const { taskId } = useParams();
+
+  // 📌 Local state for current task
   const [newTask, setNewTask] = useState(null);
+
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
+  // 📌 Context values
   const {
     capitalizeFirstLetter,
     setEditTaskPanel,
     selectedTask,
     setSelectedTask,
   } = useContext(TaskManagerContext);
+
   const navigate = useNavigate();
 
+  // 🔄 Fetch single task from backend
   const fetchTask = async () => {
     try {
-      const response = await axios.get(`${backendURL}/api/getTask/${taskId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${backendURL}/api/getTask/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.success) {
         setNewTask(response.data.data);
-        setSelectedTask(response.data.data);
+        setSelectedTask(response.data.data); // store in context for edit
       }
     } catch (err) {
       console.log(err.message);
     }
   };
 
+  // 🔁 Sync local state when selectedTask changes
   useEffect(() => {
     if (selectedTask) {
       setNewTask(selectedTask);
     }
   }, [selectedTask]);
 
+  // 🚀 Fetch task when component mounts or taskId changes
   useEffect(() => {
     fetchTask();
   }, [taskId]);
 
+  // ⏳ Loading state
   if (!newTask) return <p>Loading...</p>;
 
   return (
     <div className="h-screen px-4 py-3">
+      {/* 🔝 Header */}
       <div className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-5">
+          {/* 🔙 Back button */}
           <IoReturnUpBack
             onClick={() => navigate(-1)}
             className="text-3xl text-[#43754C] cursor-pointer"
           />
+
+          {/* 📝 Task title */}
           <h1 className="text-2xl text-[#43754C] font-bold truncate max-w-[50vw]">
             {capitalizeFirstLetter(newTask.title)}
           </h1>
         </div>
+
+        {/* ✏️ Edit button */}
         <TbEdit
           className="text-2xl text-[#43754C] cursor-pointer"
           onClick={() => setEditTaskPanel(true)}
         />
       </div>
 
+      {/* 📄 Task details */}
       <div className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-3 max-w-full wrap-break-word leading-relaxed shadow-md">
         <p>{capitalizeFirstLetter(newTask.description)}</p>
+
+        {/* 📅 Due date */}
         <p className="text-sm text-gray-200 mt-1">
           Due Date: {new Date(newTask.dueDate).toLocaleDateString()}
         </p>
       </div>
+
+      {/* 🛠️ Edit Task Panel */}
       <EditTask />
     </div>
   );
