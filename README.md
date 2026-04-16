@@ -161,7 +161,3 @@ npm run dev
 - Routes → API endpoints  
 - Models → Database schema  
 - Middleware → Authentication  
-
-### 6. Responsive UI
-- Mobile-friendly design  
-- Slide panel for adding tasks  
