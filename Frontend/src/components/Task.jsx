@@ -10,6 +10,8 @@ export const Task = () => {
   const { taskId } = useParams();
   const [newTask, setNewTask] = useState(null);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem("token");
+
   const {
     capitalizeFirstLetter,
     setEditTaskPanel,
@@ -20,7 +22,12 @@ export const Task = () => {
 
   const fetchTask = async () => {
     try {
-      const response = await axios.get(`${backendURL}/api/getTask/${taskId}`);
+      const response = await axios.get(`${backendURL}/api/getTask/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
       if (response.data.success) {
         setNewTask(response.data.data);
         setSelectedTask(response.data.data);

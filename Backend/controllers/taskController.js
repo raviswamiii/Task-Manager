@@ -14,7 +14,8 @@ export const createTask = async (req, res) => {
     const task = await taskModel.create({
       title,
       description,
-      dueDate
+      dueDate,
+      userId: req.userId,
     });
 
     return res.status(201).json({
@@ -32,7 +33,9 @@ export const createTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   try {
-    const tasks = await taskModel.find().sort({ createdAt: -1 });
+    const tasks = await taskModel
+      .find({ userId: req.userId })
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -49,7 +52,10 @@ export const getTasks = async (req, res) => {
 
 export const getTask = async (req, res) => {
   try {
-    const task = await taskModel.findById(req.params.taskId);
+    const task = await taskModel.findOne({
+      _id: req.params.taskId,
+      userId: req.userId,
+    });
 
     res.json({ success: true, data: task });
   } catch (error) {
@@ -59,7 +65,10 @@ export const getTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   try {
-    await taskModel.findByIdAndDelete(req.params.taskId);
+    await taskModel.findOneAndDelete({
+      _id: req.params.taskId,
+      userId: req.userId,
+    });
 
     return res
       .status(200)
@@ -74,8 +83,11 @@ export const deleteTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   try {
-    const updatedTask = await taskModel.findByIdAndUpdate(
-      req.params.taskId,
+    const updatedTask = await taskModel.findOneAndUpdate(
+      {
+        _id: req.params.taskId,
+        userId: req.userId,
+      },
       req.body,
       {
         returnDocument: "after",
@@ -93,7 +105,10 @@ export const updateTask = async (req, res) => {
 
 export const toggleTask = async (req, res) => {
   try {
-    const task = await taskModel.findById(req.params.taskId);
+    const task = await taskModel.findOne({
+      _id: req.params.taskId,
+      userId: req.userId,
+    });
 
     if (!task) {
       return res.status(404).json({

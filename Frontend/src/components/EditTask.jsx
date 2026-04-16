@@ -9,6 +9,7 @@ export const EditTask = () => {
   const [editDueDate, setEditDueDate] = useState("");
   const [editTaskError, setEditTaskError] = useState("");
   const [editTaskLoader, setEditTaskLoader] = useState(false);
+  const token = localStorage.getItem("token");
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,17 +21,22 @@ export const EditTask = () => {
     setTasks,
   } = useContext(TaskManagerContext);
 
+  if (!selectedTask) return <p>Loading...</p>;
+
   useEffect(() => {
     if (selectedTask) {
       setEditTitle(selectedTask.title);
       setEditDescription(selectedTask.description);
+      setEditDueDate(
+        selectedTask.dueDate ? selectedTask.dueDate.split("T")[0] : "",
+      );
     }
   }, [selectedTask]);
 
   const handleEditTask = async (e) => {
     e.preventDefault();
 
-    if (!editTitle.trim() && !editDescription.trim()) {
+    if (!editTitle.trim() && !editDescription.trim() && !editDueDate) {
       setEditTaskError("Nothing to update");
       return;
     }
@@ -48,6 +54,11 @@ export const EditTask = () => {
       const response = await axios.patch(
         `${backendURL}/api/updateTask/${selectedTask._id}`,
         updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
       if (response.data.success) {

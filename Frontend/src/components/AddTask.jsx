@@ -14,6 +14,7 @@ export const AddTask = () => {
   const [addTaskLoader, setAddTaskLoader] = useState(false);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +22,24 @@ export const AddTask = () => {
     setAddTaskError("");
 
     try {
-      const response = await axios.post(`${backendURL}/api/createTask`, {
-        title: title,
-        description: description,
-        dueDate: dueDate,
-      });
+      if (!title.trim() || !description.trim() || !dueDate) {
+        setAddTaskError("All fields are required");
+        setAddTaskLoader(false);
+        return;
+      }
+      const response = await axios.post(
+        `${backendURL}/api/createTask`,
+        {
+          title,
+          description,
+          dueDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       if (response.data.success) {
         setTasks((prev) => [response.data.data, ...prev]);
@@ -33,6 +47,7 @@ export const AddTask = () => {
         setAddTaskPanel(false);
         setTitle("");
         setDescription("");
+        setDueDate("");
 
         navigate(`/task/${response.data.data._id}`);
       } else {

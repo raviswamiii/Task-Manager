@@ -12,10 +12,16 @@ export const Home = () => {
   const { setAddTaskPanel, tasks, setTasks, capitalizeFirstLetter } =
     useContext(TaskManagerContext);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem("token");
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${backendURL}/api/getTasks`);
+      const response = await axios.get(`${backendURL}/api/getTasks`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (response.data.success) {
         setTasks(response.data.data);
       } else {
@@ -28,7 +34,15 @@ export const Home = () => {
 
   const handleDeleteTask = async (id) => {
     try {
-      const response = await axios.delete(`${backendURL}/api/deleteTask/${id}`);
+      const response = await axios.delete(
+        `${backendURL}/api/deleteTask/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       if (response.data.success) {
         toast.success("Task deleted successfully");
         setTasks((prev) => prev.filter((task) => task._id !== id));
@@ -42,7 +56,15 @@ export const Home = () => {
 
   const handleToggleTask = async (id) => {
     try {
-      const response = await axios.patch(`${backendURL}/api/toggleTask/${id}`);
+      const response = await axios.patch(
+        `${backendURL}/api/toggleTask/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       if (response.data.success) {
         const updatedTask = response.data.data;
@@ -57,8 +79,8 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (token) fetchTasks();
+  }, [token]);
   return (
     <div className="h-screen px-4 py-3 flex flex-col">
       {/* ✅ Header (fixed, no scroll) */}
