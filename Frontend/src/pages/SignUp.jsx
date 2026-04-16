@@ -11,6 +11,9 @@ export const SignUp = () => {
   // ❌ Error state
   const [error, setError] = useState("");
 
+  // ⏳ Loading state
+  const [loading, setLoading] = useState(false);
+
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
@@ -18,7 +21,21 @@ export const SignUp = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
+    // Reset error
+    setError("");
+
+    // Basic validation
+    if (!name || !email || !password) {
+      return setError("Please fill all fields");
+    }
+
+    if (password.length < 6) {
+      return setError("Password must be at least 6 characters");
+    }
+
     try {
+      setLoading(true);
+
       const response = await axios.post(`${backendURL}/user/signUp`, {
         name,
         email,
@@ -32,11 +49,15 @@ export const SignUp = () => {
         // 🚀 Redirect to home
         navigate("/");
       } else {
-        setError(response.data.message);
+        setError(response.data.message || "Something went wrong");
       }
     } catch (error) {
-      // ❌ Handle API / network errors
-      setError(error.response?.data?.message || error.message);
+      setError(
+        error.response?.data?.message ||
+          "Server error. Please try again later."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +80,7 @@ export const SignUp = () => {
             type="text"
             placeholder="Name"
             value={name}
+            disabled={loading}
             onChange={(e) => setName(e.target.value)}
           />
 
@@ -68,6 +90,7 @@ export const SignUp = () => {
             type="email"
             placeholder="Email address"
             value={email}
+            disabled={loading}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -77,20 +100,28 @@ export const SignUp = () => {
             type="password"
             placeholder="Password"
             value={password}
+            disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           {/* 🔘 Submit Button */}
           <button
             type="submit"
-            className="mt-2 bg-white text-black p-3 rounded-xl font-bold hover:bg-gray-200 transition-all duration-300 active:scale-95"
+            disabled={loading}
+            className={`mt-2 p-3 rounded-xl font-bold transition-all duration-300 ${
+              loading
+                ? "bg-gray-400 text-black cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-200 active:scale-95"
+            }`}
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
         {/* ❌ Error Message */}
-        <p className="text-red-500 text-center mt-2">{error}</p>
+        {error && (
+          <p className="text-red-500 text-center mt-3 text-sm">{error}</p>
+        )}
 
         {/* 🔗 Redirect to Sign In */}
         <Link to="/signIn">

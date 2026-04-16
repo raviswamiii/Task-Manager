@@ -34,6 +34,7 @@ export const Logout = ({ setShowLogoutPopUp }) => {
 
         // Redirect to login page
         navigate("/signIn");
+        setLogout(false);
       } else {
         console.log(response.data.message);
       }
@@ -44,21 +45,23 @@ export const Logout = ({ setShowLogoutPopUp }) => {
   };
 
   return (
-    <div className="bg-white border flex flex-col justify-center items-center gap-4 rounded px-4 py-2">
+    <div className="w-full max-w-sm bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 text-white">
+
       {/* 🧾 Heading */}
-      <div className="text-center">
-        <p className="text-xl font-semibold">Log Out</p>
-        <p className="text-gray-600">
-          Are you sure you want to log out?
+      <div className="text-center mb-6">
+        <p className="text-2xl font-semibold">Log Out</p>
+        <p className="text-gray-300 text-sm mt-2">
+          Are you sure you want to log out of your account?
         </p>
       </div>
 
       {/* 🔘 Action buttons */}
-      <div>
+      <div className="flex gap-3 justify-center">
+
         {/* Confirm logout */}
         <button
           onClick={onLogoutHandle}
-          className="border px-5 py-1 rounded mr-2"
+          className="flex-1 bg-red-500 hover:bg-red-600 active:scale-95 transition-all duration-200 text-white font-medium py-2 rounded-xl shadow-md"
         >
           Confirm
         </button>
@@ -66,11 +69,11 @@ export const Logout = ({ setShowLogoutPopUp }) => {
         {/* Cancel logout */}
         <button
           onClick={() => setLogout(false)}
-          className="border px-5 py-1 rounded"
+          className="flex-1 bg-white/10 hover:bg-white/20 active:scale-95 transition-all duration-200 border border-white/20 text-white font-medium py-2 rounded-xl"
         >
           Cancel
         </button>
       </div>
     </div>
-  );
+);
 };

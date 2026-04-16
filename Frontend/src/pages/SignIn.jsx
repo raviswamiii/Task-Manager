@@ -10,6 +10,9 @@ export const SignIn = () => {
   // ❌ Error state
   const [error, setError] = useState("");
 
+  // ⏳ Loading state
+  const [loading, setLoading] = useState(false);
+
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
@@ -17,7 +20,17 @@ export const SignIn = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
+    // Reset error
+    setError("");
+
+    // Basic validation
+    if (!email || !password) {
+      return setError("Please fill all fields");
+    }
+
     try {
+      setLoading(true);
+
       const response = await axios.post(`${backendURL}/user/signIn`, {
         email,
         password,
@@ -30,11 +43,15 @@ export const SignIn = () => {
         // 🚀 Redirect to Home
         navigate("/");
       } else {
-        setError(response.data.message);
+        setError(response.data.message || "Something went wrong");
       }
     } catch (error) {
-      // ❌ Handle API / network errors
-      setError(error.response?.data?.message || error.message);
+      setError(
+        error.response?.data?.message ||
+          "Server error. Please try again later."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,6 +74,7 @@ export const SignIn = () => {
             type="email"
             placeholder="Email address"
             value={email}
+            disabled={loading}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -66,20 +84,28 @@ export const SignIn = () => {
             type="password"
             placeholder="Password"
             value={password}
+            disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           {/* 🔘 Submit Button */}
           <button
             type="submit"
-            className="mt-2 bg-white text-black p-3 rounded-xl font-bold hover:bg-gray-200 transition-all duration-300 active:scale-95"
+            disabled={loading}
+            className={`mt-2 p-3 rounded-xl font-bold transition-all duration-300 ${
+              loading
+                ? "bg-gray-400 text-black cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-200 active:scale-95"
+            }`}
           >
-            Sign In
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
         {/* ❌ Error Message */}
-        <p className="text-red-500 text-center mt-2">{error}</p>
+        {error && (
+          <p className="text-red-500 text-center mt-3 text-sm">{error}</p>
+        )}
 
         {/* 🔗 Redirect to Sign Up */}
         <Link to="/signUp">

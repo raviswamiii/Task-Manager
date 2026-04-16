@@ -202,7 +202,7 @@ export const Home = () => {
 
       {/* 🚪 Logout Popup Overlay */}
       <div
-        className={`flex justify-center items-center fixed inset-0 z-20 bg-black/30 backdrop-blur-sm ${
+        className={`flex justify-center items-center px-6 fixed inset-0 z-20 bg-black/60 backdrop-blur-sm ${
           logout ? "" : "hidden"
         }`}
       >
