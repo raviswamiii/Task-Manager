@@ -33,6 +33,11 @@ app.use("/api", taskRouter);
 // User auth routes
 app.use("/user", userRouter);
 
+// Keep awake route
+app.get("/keepAwake", (req, res) => {
+  res.status(200).send("OK");
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
