@@ -161,3 +161,9 @@ npm run dev
 - Routes → API endpoints  
 - Models → Database schema  
 - Middleware → Authentication  
+
+## 🔄 Deployment & Monitoring
+
+- The frontend is deployed on **Vercel**, and the backend is deployed on **Render**, ensuring a scalable and production-ready setup.
+- The backend is monitored using **UptimeRobot** to ensure uptime and reliability.
+- A dedicated `/keepAwake` endpoint is implemented for automated monitoring checks and to verify server availability.
