@@ -17,10 +17,10 @@ export const ProtectRoutes = ({ children }) => {
       localStorage.removeItem("token");
       return <Navigate to="/signIn" replace />;
     }
-  } catch (error) {
+
+    return children;
+  } catch (err) {
     localStorage.removeItem("token");
     return <Navigate to="/signIn" replace />;
   }
-
-  return children;
 };

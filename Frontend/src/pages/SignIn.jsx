@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export const SignIn = ({ setToken }) => {
+export const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -16,18 +17,18 @@ export const SignIn = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
       } else {
         setError(response.data.message);
       }
     } catch (error) {
-      setError(error.response?.data?.message || "server error");
+      setError(error.response?.data?.message || error.message);
     }
   };
   return (
     <div className="min-h-screen bg-linear-to-br from-black via-gray-900 to-black flex items-center justify-center p-8">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-        
         <p className="text-gray-300 text-center mb-6 text-sm">
           Sign in to continue
         </p>
