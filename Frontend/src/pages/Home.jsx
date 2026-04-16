@@ -53,7 +53,7 @@ export const Home = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -79,7 +79,7 @@ export const Home = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -87,9 +87,7 @@ export const Home = () => {
 
         // 🔄 Update UI instantly
         setTasks((prev) =>
-          prev.map((task) =>
-            task._id === id ? updatedTask : task
-          )
+          prev.map((task) => (task._id === id ? updatedTask : task)),
         );
       }
     } catch (error) {
@@ -105,10 +103,8 @@ export const Home = () => {
   return (
     <div className="h-screen px-4 py-3 flex flex-col">
       {/* 🔝 Header */}
-      <div className="flex justify-between items-center mb-5">
-        <h1 className="text-2xl text-[#43754C] font-bold">
-          Task Manager
-        </h1>
+      <div className="flex justify-between items-center mb-3">
+        <h1 className="text-2xl text-[#43754C] font-bold">Task Manager</h1>
 
         {/* ➕ Add + 🚪 Logout */}
         <div className="flex items-center gap-3">
@@ -121,20 +117,19 @@ export const Home = () => {
 
           <MdLogout
             onClick={() => setLogout(true)}
-            className="text-xl text-red-400 cursor-pointer"
+            className="text-2xl text-red-400 cursor-pointer"
           />
         </div>
       </div>
 
       {/* 📜 Task List (scrollable) */}
-      <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar">
+      <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-2 hide-scrollbar border border-[#43754C] rounded-2xl p-4">
         {tasks.length > 0 ? (
           tasks.map((item) => {
             const now = new Date();
 
             // ⚠️ Status checks
-            const isOverdue =
-              new Date(item.dueDate) < now && !item.isCompleted;
+            const isOverdue = new Date(item.dueDate) < now && !item.isCompleted;
 
             const isPending =
               new Date(item.dueDate) >= now && !item.isCompleted;
@@ -169,17 +164,19 @@ export const Home = () => {
                     {capitalizeFirstLetter(item.description)}
                   </p>
 
-                  <p className="text-xs text-gray-200">
-                    Due: {new Date(item.dueDate).toLocaleDateString()}
-                  </p>
+                  <div className="flex justify-between mt-0.5">
+                    <p className="text-xs text-gray-200">
+                      Due: {new Date(item.dueDate).toLocaleDateString()}
+                    </p>
 
-                  <p className="text-xs">
-                    {item.isCompleted
-                      ? "Completed ✅"
-                      : isOverdue
-                      ? "Overdue ❌"
-                      : "Pending ⏳"}
-                  </p>
+                    <p className="text-xs">
+                      {item.isCompleted
+                        ? "Completed ✅"
+                        : isOverdue
+                          ? "Overdue ❌"
+                          : "Pending ⏳"}
+                    </p>
+                  </div>
                 </Link>
 
                 {/* 🗑️ Delete */}
@@ -191,9 +188,26 @@ export const Home = () => {
             );
           })
         ) : (
-          <p className="text-center text-gray-400">
-            Tasks not added yet.
-          </p>
+          <div className="flex flex-col items-center justify-center text-center pt-34 px-4">
+            {/* Icon */}
+            <div className="text-6xl mb-4 opacity-70">📝</div>
+
+            {/* Title */}
+            <h2 className="text-xl font-semibold text-gray-200">
+              No tasks yet
+            </h2>
+
+            {/* Subtitle */}
+            <p className="text-gray-400 text-sm mt-2 max-w-sm">
+              You haven’t added any tasks yet. Start by creating your first task
+              and stay organized 🚀
+            </p>
+
+            {/* Optional hint */}
+            <div className="mt-6 px-4 py-2 rounded-full bg-white/10 text-gray-300 text-xs">
+              Click “Add Task” to get started
+            </div>
+          </div>
         )}
       </div>
 
