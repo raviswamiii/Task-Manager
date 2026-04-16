@@ -63,41 +63,51 @@ export const Task = () => {
   if (!newTask) return <p>Loading...</p>;
 
   return (
-    <div className="h-screen px-4 py-3">
-      {/* 🔝 Header */}
-      <div className="flex justify-between items-center mb-5">
-        <div className="flex items-center gap-5">
-          {/* 🔙 Back button */}
-          <IoReturnUpBack
-            onClick={() => navigate(-1)}
-            className="text-3xl text-[#43754C] cursor-pointer"
-          />
+  <div className="h-screen flex flex-col px-4 py-3">
 
-          {/* 📝 Task title */}
-          <h1 className="text-2xl text-[#43754C] font-bold truncate max-w-[50vw]">
-            {capitalizeFirstLetter(newTask.title)}
-          </h1>
-        </div>
+    {/* 🔝 HEADER (fixed / sticky) */}
+    <div className="sticky top-0 z-10 bg-white flex justify-between items-center mb-2 py-2">
 
-        {/* ✏️ Edit button */}
-        <TbEdit
-          className="text-2xl text-[#43754C] cursor-pointer"
-          onClick={() => setEditTaskPanel(true)}
+      <div className="flex items-center gap-5 min-w-0">
+        {/* 🔙 Back button */}
+        <IoReturnUpBack
+          onClick={() => navigate(-1)}
+          className="text-3xl text-[#43754C] cursor-pointer shrink-0"
         />
+
+        {/* 📝 Task title */}
+        <h1 className="text-2xl text-[#43754C] font-bold truncate max-w-[70vw]">
+          {capitalizeFirstLetter(newTask.title)}
+        </h1>
       </div>
 
-      {/* 📄 Task details */}
-      <div className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-3 max-w-full wrap-break-word leading-relaxed shadow-md">
-        <p>{capitalizeFirstLetter(newTask.description)}</p>
+      {/* ✏️ Edit button */}
+      <TbEdit
+        className="text-2xl text-[#43754C] cursor-pointer shrink-0"
+        onClick={() => setEditTaskPanel(true)}
+      />
+    </div>
+
+    {/* 📄 SCROLLABLE CONTENT */}
+    <div className="flex-1 overflow-y-auto hide-scrollbar rounded-2xl">
+
+      {/* 📦 Task card */}
+      <div className="bg-[#8ABC94] text-white font-semibold rounded-2xl px-4 py-4 shadow-md">
+
+        <p className="leading-relaxed wrap-break-word">
+          {capitalizeFirstLetter(newTask.description)}
+        </p>
 
         {/* 📅 Due date */}
-        <p className="text-sm text-gray-200 mt-1">
+        <p className="text-sm text-gray-200 mt-3">
           Due Date: {new Date(newTask.dueDate).toLocaleDateString()}
         </p>
       </div>
 
-      {/* 🛠️ Edit Task Panel */}
-      <EditTask />
     </div>
-  );
+
+    {/* 🛠️ Edit Task Panel */}
+    <EditTask />
+  </div>
+);
 };

@@ -149,34 +149,36 @@ export const Home = () => {
             return (
               <div
                 key={item._id}
-                className={`flex items-center justify-between gap-3 text-white font-semibold rounded-2xl px-4 py-2 ${
+                className={`flex items-center justify-between gap-3 text-white font-semibold rounded-2xl px-4 py-3 ${
                   isOverdue ? "bg-red-400" : "bg-[#8ABC94]"
                 }`}
               >
-                {/* ✅ Toggle complete */}
-                {item.isCompleted ? (
-                  <IoMdCheckmarkCircleOutline
-                    onClick={() => handleToggleTask(item._id)}
-                    className="text-3xl cursor-pointer"
-                  />
-                ) : (
-                  <GrEmptyCircle
-                    onClick={() => handleToggleTask(item._id)}
-                    className="text-3xl cursor-pointer"
-                  />
-                )}
+                {/* ✅ Toggle complete (fixed size container) */}
+                <div className="shrink-0">
+                  {item.isCompleted ? (
+                    <IoMdCheckmarkCircleOutline
+                      onClick={() => handleToggleTask(item._id)}
+                      className="text-3xl cursor-pointer"
+                    />
+                  ) : (
+                    <GrEmptyCircle
+                      onClick={() => handleToggleTask(item._id)}
+                      className="text-3xl cursor-pointer"
+                    />
+                  )}
+                </div>
 
-                {/* 🔗 Task link */}
-                <Link className="w-full" to={`/task/${item._id}`}>
-                  <p className="text-lg truncate max-w-[60vw]">
+                {/* 🔗 Task link (flex grows but doesn't affect icons) */}
+                <Link className="flex-1 min-w-0" to={`/task/${item._id}`}>
+                  <p className="text-lg truncate">
                     {capitalizeFirstLetter(item.title)}
                   </p>
 
-                  <p className="text-sm truncate max-w-[60vw] text-gray-100">
+                  <p className="text-sm truncate text-gray-100">
                     {capitalizeFirstLetter(item.description)}
                   </p>
 
-                  <div className="flex justify-between mt-0.5">
+                  <div className="flex justify-between">
                     <p className="text-xs text-gray-200">
                       Due: {new Date(item.dueDate).toLocaleDateString()}
                     </p>
@@ -191,11 +193,13 @@ export const Home = () => {
                   </div>
                 </Link>
 
-                {/* 🗑️ Delete */}
-                <MdDeleteSweep
-                  onClick={() => handleDeleteTask(item._id)}
-                  className="text-4xl cursor-pointer"
-                />
+                {/* 🗑️ Delete (fixed size container) */}
+                <div className="shrink-0">
+                  <MdDeleteSweep
+                    onClick={() => handleDeleteTask(item._id)}
+                    className="text-4xl cursor-pointer"
+                  />
+                </div>
               </div>
             );
           })
