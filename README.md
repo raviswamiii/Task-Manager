@@ -85,30 +85,44 @@
 ### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/raviswamiii/Task-Manager.git
-
-## ⚙️ Setup Instructions
+```
 
 ### 2️⃣ Setup Backend
 ```bash
-- cd backend
-- npm install
+cd backend
+npm install
+```
 
-Create a .env file:
-- PORT=3000
-- MONGO_URI=your_mongodb_connection_string
-- JWT_SECRET=jwtsecretforuser
-- FRONTEND_URL=http://localhost:5173
+Create a `.env` file:
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=jwtsecretforuser
+FRONTEND_URL=http://localhost:5173
+```
 
 Run backend:
-- npm run dev
+```bash
+npm run dev
+```
 
-### 2️⃣ Setup Frontend
+### 3️⃣ Setup Frontend
 ```bash
 cd frontend
-- npm install
+npm install
+```
 
-Create .env:
-- npm run dev
+Create `.env`:
+```env
+VITE_BACKEND_URL=http://localhost:3000
+```
+
+Run frontend:
+```bash
+npm run dev
+```
+
+---
 
 ## ▶️ How to Use
 
